@@ -6,7 +6,7 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 21:52:18 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/21 00:29:48 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/21 13:22:10 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <dirent.h>
 # include <sys/stat.h>
+# include <string.h>
 
 typedef struct s_flags
 {

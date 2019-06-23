@@ -6,11 +6,87 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 15:28:29 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/21 01:24:00 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/22 17:22:17 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+int		ft_strcmp(const char *s1, const char *s2)
+{
+	int i;
+
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
+size_t	ft_strlen(char *s)
+{
+	size_t	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+char	*ft_routecat(char *s1, char *s2, char *ptr)
+{
+	size_t	len;
+
+	len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	if (!(ptr = (char *)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	len = -1;
+	while (s1[++len])
+		ptr[len] = s1[len];
+	ptr[len++] = '/';
+	while (*s2)
+		ptr[len++] = *s2++;
+	ptr[len] = '\0';
+	return (ptr);
+}
+
+void listdir(char *name, int indent)
+{
+	DIR *dir;
+	struct dirent *entry;
+	struct stat sb;
+	char			*route;
+	char *path;
+
+	if (!(dir = opendir(name)))
+	{
+		return;
+	}
+	while ((entry = readdir(dir)) != NULL)
+	{
+		route = ft_routecat(name, entry->d_name, route);
+		lstat(route, &sb);
+		if (S_ISDIR(sb.st_mode))
+		{
+			// printf("*** OK ***\n");
+			// char path[1024];
+			if (ft_strcmp(entry->d_name, ".") == 0 || ft_strcmp(entry->d_name, "..") == 0)
+			{
+				printf("%*s[%s]\n", indent, "", entry->d_name);
+				continue;
+			}
+			// snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
+			path = ft_routecat(name, entry->d_name, path);
+			printf("%*s[%s]\n", indent, "", entry->d_name);
+			listdir(path, indent + 2);
+		}
+		else
+		{
+			// printf("*** SHIT ***\n");
+			printf("%*s- %s\n", indent, "", entry->d_name);
+		}
+	}
+	closedir(dir);
+}
 
 int main(int argc, char **argv)
 {
@@ -18,8 +94,6 @@ int main(int argc, char **argv)
 	int i_test;
 	int num_arg;
 	t_flags *ptrflags;
-	DIR *dir;
-	struct dirent *sd;
 
 	i = 1;
 	i_test = 1;
@@ -84,26 +158,12 @@ int main(int argc, char **argv)
 	printf("r = [%d]\n", ptrflags->r);
 	printf("t = [%d]\n", ptrflags->t);
 
-	// find files or directory names and save them
+	// Recursion
 	if (argc > 1)
 	{
 		while (i <= num_arg)
 		{
-			// printf("*** %d\n", i);
-			// printf("%s\n", argv[i]);
-			dir = opendir(argv[i]);
-			if (dir == NULL)
-			{
-				printf("ls: %s: No such file or directory\n", argv[i]);
-			}
-			else
-			{
-				while ((sd = readdir(dir)) != NULL)
-				{
-					printf(">> [%s]\n", sd->d_name);
-				}
-				closedir(dir);
-			}
+			listdir(argv[i], 0);
 			i++;
 		}
 	}
