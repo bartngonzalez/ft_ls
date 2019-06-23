@@ -6,7 +6,7 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 15:28:29 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/22 17:22:17 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/23 00:00:55 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void listdir(char *name, int indent)
 	DIR *dir;
 	struct dirent *entry;
 	struct stat sb;
+	struct passwd *pwd;
+	struct group	*grp;
 	char			*route;
 	char *path;
 
@@ -65,24 +67,37 @@ void listdir(char *name, int indent)
 	{
 		route = ft_routecat(name, entry->d_name, route);
 		lstat(route, &sb);
+		pwd = getpwuid(sb.st_uid);
+		grp = getgrgid(sb.st_gid);
+		//Permisions
+		printf((S_ISDIR(sb.st_mode)) ? "d" : "-");
+		printf((sb.st_mode & S_IRUSR) ? "r" : "-");
+		printf((sb.st_mode & S_IWUSR) ? "w" : "-");
+		printf((sb.st_mode & S_IXUSR) ? "x" : "-");
+		printf((sb.st_mode & S_IRGRP) ? "r" : "-");
+		printf((sb.st_mode & S_IWGRP) ? "w" : "-");
+		printf((sb.st_mode & S_IXGRP) ? "x" : "-");
+		printf((sb.st_mode & S_IROTH) ? "r" : "-");
+		printf((sb.st_mode & S_IWOTH) ? "w" : "-");
+		printf((sb.st_mode & S_IXOTH) ? "x" : "-");
+		printf(" %2u ", sb.st_nlink);
+		printf("%1s", pwd->pw_name);
+		printf("%11s", grp->gr_name);
+		printf("%7lld", sb.st_size);
 		if (S_ISDIR(sb.st_mode))
 		{
-			// printf("*** OK ***\n");
-			// char path[1024];
 			if (ft_strcmp(entry->d_name, ".") == 0 || ft_strcmp(entry->d_name, "..") == 0)
 			{
 				printf("%*s[%s]\n", indent, "", entry->d_name);
 				continue;
 			}
-			// snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
 			path = ft_routecat(name, entry->d_name, path);
 			printf("%*s[%s]\n", indent, "", entry->d_name);
 			listdir(path, indent + 2);
 		}
 		else
 		{
-			// printf("*** SHIT ***\n");
-			printf("%*s- %s\n", indent, "", entry->d_name);
+			printf("%*s %s\n", indent, "", entry->d_name);
 		}
 	}
 	closedir(dir);
