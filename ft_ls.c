@@ -6,11 +6,31 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 15:28:29 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/23 00:00:55 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/24 17:02:14 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+char	*ft_strstr(const char *haystack, const char *needle)
+{
+	int	j;
+
+	if (!*needle)
+		return ((char *)haystack);
+	while (*haystack)
+	{
+		j = 0;
+		while (*(haystack + j) == *(needle + j))
+		{
+			if (!*(needle + j + 1))
+				return ((char *)haystack);
+			j++;
+		}
+		haystack++;
+	}
+	return (0);
+}
 
 int		ft_strcmp(const char *s1, const char *s2)
 {
@@ -53,11 +73,12 @@ void listdir(char *name, int indent)
 {
 	DIR *dir;
 	struct dirent *entry;
+	char			*route;
+	char *path;
 	struct stat sb;
 	struct passwd *pwd;
 	struct group	*grp;
-	char			*route;
-	char *path;
+	char *curtime;
 
 	if (!(dir = opendir(name)))
 	{
@@ -69,6 +90,7 @@ void listdir(char *name, int indent)
 		lstat(route, &sb);
 		pwd = getpwuid(sb.st_uid);
 		grp = getgrgid(sb.st_gid);
+		curtime = ctime(&sb.st_mtimespec.tv_sec);
 		//Permisions
 		printf((S_ISDIR(sb.st_mode)) ? "d" : "-");
 		printf((sb.st_mode & S_IRUSR) ? "r" : "-");
@@ -80,10 +102,18 @@ void listdir(char *name, int indent)
 		printf((sb.st_mode & S_IROTH) ? "r" : "-");
 		printf((sb.st_mode & S_IWOTH) ? "w" : "-");
 		printf((sb.st_mode & S_IXOTH) ? "x" : "-");
-		printf(" %2u ", sb.st_nlink);
+		printf(" %2d ", sb.st_nlink);
 		printf("%1s", pwd->pw_name);
 		printf("%11s", grp->gr_name);
-		printf("%7lld", sb.st_size);
+		printf("%9lld", sb.st_size);
+		if (ft_strstr(curtime, "2019"))
+		{
+			printf("%7.6s %.5s", (curtime + 4), (curtime + 11));
+		}
+		else
+		{
+			printf("%7.6s %5.4s", (curtime + 4), (curtime + 20));
+		}
 		if (S_ISDIR(sb.st_mode))
 		{
 			if (ft_strcmp(entry->d_name, ".") == 0 || ft_strcmp(entry->d_name, "..") == 0)
