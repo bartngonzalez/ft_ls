@@ -6,7 +6,7 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 21:52:18 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/24 15:52:12 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/27 20:50:00 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,16 @@ typedef struct s_flags
 	int r;
 	int t;
 } t_flags;
+
+typedef struct s_dir
+{
+	struct s_dir *next;
+	struct s_dir *sub_dir;
+} t_dir;
+
+typedef struct s_file
+{
+	struct s_file *next;
+} t_file;
 
 #endif

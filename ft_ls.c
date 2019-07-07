@@ -6,7 +6,7 @@
 /*   By: bgonzale <bgonzale@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/20 15:28:29 by bgonzale          #+#    #+#             */
-/*   Updated: 2019/06/24 17:02:14 by bgonzale         ###   ########.fr       */
+/*   Updated: 2019/06/29 17:11:16 by bgonzale         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,19 @@
 
 char	*ft_strstr(const char *haystack, const char *needle)
 {
-	int	j;
+	int	i;
 
+	i = 0;
 	if (!*needle)
 		return ((char *)haystack);
 	while (*haystack)
 	{
-		j = 0;
-		while (*(haystack + j) == *(needle + j))
+		i = 0;
+		while (*(haystack + i) == *(needle + i))
 		{
-			if (!*(needle + j + 1))
+			if (!*(needle + i + 1))
 				return ((char *)haystack);
-			j++;
+			i++;
 		}
 		haystack++;
 	}
